@@ -1,0 +1,11 @@
+package domain;
+
+public enum ErrorType {
+    INTERNET_UNAVAILABLE_ERROR,
+    UNAUTHORIZED_ERROR,
+    CLIENT_ERROR,
+    SERVER_ERROR,
+    NETWORK_ERROR,
+    SDK_INIT_ERROR,
+    OTHER_ERROR
+}

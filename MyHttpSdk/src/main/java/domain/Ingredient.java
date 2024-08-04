@@ -55,4 +55,16 @@ public class Ingredient {
     public void setStrABV(String strABV) {
         this.strABV = strABV;
     }
+
+    @Override
+    public String toString() {
+        return "Ingredient{" +
+                "idIngredient='" + idIngredient + '\'' +
+                ", strIngredient='" + strIngredient + '\'' +
+                ", strDescription='" + strDescription + '\'' +
+                ", strType='" + strType + '\'' +
+                ", strAlcohol='" + strAlcohol + '\'' +
+                ", strABV='" + strABV + '\'' +
+                '}';
+    }
 }

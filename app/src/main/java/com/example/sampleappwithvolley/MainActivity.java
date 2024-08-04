@@ -21,15 +21,22 @@ import java.util.List;
 
 import callbacks.GetCocktailCallback;
 import callbacks.SearchCocktailsCallback;
+import callbacks.SearchIngredientsCallback;
 import domain.Cocktail;
+import domain.Ingredient;
+import events.IngredientEventArgs;
+import events.IngredientListener;
+import exceptions.CocktailsSdkException;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  implements IngredientListener<IngredientEventArgs> {
 
     private Button searchCocktailsButton;
     private Button getRandomCocktailsButton;
+    private Button searchIngredientButton;
     private ListView cocktailListView;
     private CocktailAdapter adapter;
     private TextView cocktailTextView;
+    private  IngredientAdapter ingredientAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,12 +46,13 @@ public class MainActivity extends AppCompatActivity {
 
         searchCocktailsButton = findViewById(R.id.search_cocktails_button);
         getRandomCocktailsButton = findViewById(R.id.get_random_cocktails_button);
+        searchIngredientButton = findViewById(R.id.search_ingredient_button);
         cocktailListView = findViewById(R.id.cocktail_list);
         cocktailTextView = findViewById(R.id.cocktail);
         cocktailListView.setAdapter(adapter);
 
-        VSdkManager.getInstance().startSdk(getApplicationContext());
-
+       // VSdkManager.getInstance().startSdk(getApplicationContext());
+        VSdkManager.getInstance().startSdk(this);
         searchCocktailsButton.setOnClickListener(view -> {
             CocktailManager.getInstance().searchCocktailsByName("mojito", new SearchCocktailsCallback() {
                 @Override
@@ -54,8 +62,9 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onSearchFailed(String message) {
-                    Toast.makeText(MainActivity.this, "Error: " + message, Toast.LENGTH_LONG).show();
+                public void onSearchCocktailsFailed(CocktailsSdkException exception) {
+                    String message = exception.getErrorType().toString() + " " + exception.getMessage();
+                    Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
                 }
             });
         });
@@ -69,12 +78,17 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onGetFailed(String message) {
-                    Toast.makeText(MainActivity.this, "Error: " + message, Toast.LENGTH_LONG).show();
+                public void onGetRandomCocktailFailed(CocktailsSdkException exception) {
+                    String message = exception.getErrorType().toString() + " " + exception.getMessage();
+                    Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
                 }
             });
         });
 
+
+        searchIngredientButton.setOnClickListener(view -> {
+            CocktailManager.getInstance().searchIngredientByName(  this,"vodka");
+        });
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -82,6 +96,17 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+    }
 
+    @Override
+    public void onIngredientSearchCompleted(IngredientEventArgs eventArgs) {
+        List<Ingredient> ingredients =  eventArgs.getIngredients();
+        ingredientAdapter = new IngredientAdapter(this,ingredients);
+        cocktailListView.setAdapter(ingredientAdapter);
+    }
+
+    @Override
+    public void onIngredientSearchError(String message) {
+        Toast.makeText(MainActivity.this, "Error: " + message, Toast.LENGTH_LONG).show();
     }
 }

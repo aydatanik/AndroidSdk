@@ -1,6 +1,10 @@
 package com.example.myhttpsdk.core;
 
+import android.app.Activity;
 import android.bluetooth.le.ScanCallback;
+import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.SyncStateContract;
 
 import com.android.volley.Response;
@@ -13,9 +17,13 @@ import java.util.concurrent.CompletableFuture;
 
 import callbacks.GetCocktailCallback;
 import callbacks.SearchCocktailsCallback;
+import callbacks.SearchIngredientsCallback;
 import domain.Cocktail;
 import domain.Constants;
+import domain.ErrorType;
 import events.IngredientEventArgs;
+import events.IngredientListener;
+import exceptions.CocktailsSdkException;
 
 public class CocktailManager {
 
@@ -39,20 +47,22 @@ public class CocktailManager {
           return instance.get();
     }
 
-    public void searchCocktailsByName(String cocktailName, SearchCocktailsCallback callback){
+    public void searchCocktailsByName(String cocktailName, SearchCocktailsCallback callback) {
         String fullApiUrl = Constants.BASE_URL + Constants.REST_SEARCH_COCKTAILS_BY_NAME + cocktailName;
-        httpHelper.getRequest(fullApiUrl, new Response.Listener<List<Cocktail>>() {
+        httpHelper.getCocktailList(fullApiUrl, new Response.Listener<List<Cocktail>>() {
             @Override
             public void onResponse(List<Cocktail> cocktails) {
                  callback.onSearchResult(cocktails);
-                //Toast.makeText(MainActivity.this, "Foods: \n" + cocktailDetails.toString(), Toast.LENGTH_LONG).show();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                //Toast.makeText(MainActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                System.out.println("Error"  );
-                callback.onSearchFailed(error.getMessage());
+                int responseCode = 0;
+               if(error.networkResponse != null){
+                   responseCode = error.networkResponse.statusCode;
+               }
+                CocktailsSdkException exception = getCocktailSdkError(responseCode);
+                callback.onSearchCocktailsFailed(exception);
             }
         });
     }
@@ -68,31 +78,49 @@ public class CocktailManager {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                //Toast.makeText(MainActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                System.out.println("Error"  );
-                callback.onGetFailed(error.getMessage());
+                int responseCode = 0;
+                if(error.networkResponse != null){
+                    responseCode = error.networkResponse.statusCode;
+                }
+                CocktailsSdkException exception = getCocktailSdkError(responseCode);
+                callback.onGetRandomCocktailFailed(exception);
             }
         });
     }
 
-    public void searchByIngredient(){
-        String fullApiUrl = Constants.BASE_URL + Constants.REST_GET_RANDOM_COCKTAIL;
-        CompletableFuture<IngredientEventArgs> future =  httpHelper.getIngredientAsync(fullApiUrl);
-        future.thenAccept(this::onIngredientSearchCompleted);
-                //.exceptionally(this::onIngredientSearchError);
+    public void searchIngredientByName( IngredientListener<IngredientEventArgs> listener, String ingredientName){
+        CompletableFuture<IngredientEventArgs> future =  httpHelper.getIngredientAsync(ingredientName, listener);
+        future.thenAccept (eventArgs -> {
+           /* ((Activity) context).runOnUiThread(new Runnable() {
+                public void run() {
+                  onIngredientSearchCompleted(callback,eventArgs);
+                }
+            });*/
+            new Handler(Looper.getMainLooper()).post(() -> {
+                listener.onIngredientSearchCompleted(eventArgs);
+            });
+        }).exceptionally(throwable -> {
+            new Handler(Looper.getMainLooper()).post(() -> {
+                listener.onIngredientSearchError(throwable.getMessage());
+            });
+            return null;
+        });
     }
 
-    public void onIngredientSearchCompleted(IngredientEventArgs eventArgs){
-       /* runOnUiThread() -> {
-
-        }*/
+    private CocktailsSdkException getCocktailSdkError(int responseCode){
+        CocktailsSdkException exception;
+        if(responseCode == 401){
+            exception =  new CocktailsSdkException(ErrorType.UNAUTHORIZED_ERROR, "Unauthorized access -status code 401");
+        }
+        if(responseCode > 400){
+            exception =  new CocktailsSdkException(ErrorType.CLIENT_ERROR, "Client error");
+        }
+        if(responseCode > 500){
+            exception =  new CocktailsSdkException(ErrorType.SERVER_ERROR, "Server error");
+        }else{
+            exception =  new CocktailsSdkException(ErrorType.NETWORK_ERROR, "Please check the internet connection");
+        }
+        return exception;
     }
-
-    public void onIngredientSearchError(Throwable throwable){
-        /*runOnUiThread() -> {
-
-        }*/
-    }
-
 }
 

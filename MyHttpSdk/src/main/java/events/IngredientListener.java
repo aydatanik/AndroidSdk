@@ -1,6 +1,6 @@
 package events;
 
-public interface IngredientListener {
+public interface IngredientListener<IngredientEventArgs> {
     void onIngredientSearchCompleted(IngredientEventArgs  eventArgs);
-    void onIngredientSearchError();
+    void onIngredientSearchError(String message);
 }

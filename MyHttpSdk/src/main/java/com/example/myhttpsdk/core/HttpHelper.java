@@ -6,10 +6,9 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.gson.Gson;
+
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -21,19 +20,20 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import domain.Cocktail;
+import domain.Constants;
+import domain.ErrorType;
 import domain.Ingredient;
 import events.IngredientEventArgs;
 import events.IngredientListener;
+import exceptions.CocktailsSdkException;
 
 public class HttpHelper {
     private static HttpHelper instance;
     private RequestQueue requestQueue;
-    private Gson gson;
     private static Context ctx;
 
     private HttpHelper(Context context){
         ctx = context;
-        gson = new Gson();
         requestQueue = getRequestQueue();
     }
 
@@ -73,7 +73,7 @@ public class HttpHelper {
         getRequestQueue().add(jsonArrayRequest);
     }*/
 
-    public  void getRequest(String apiUrl,
+    public  void getCocktailList(String apiUrl,
                                final Response.Listener<List<Cocktail>> listener, final Response.ErrorListener errorListener){
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.GET, apiUrl, null, new Response.Listener<JSONObject>() {
@@ -203,11 +203,11 @@ public class HttpHelper {
     }
 
 
-    public CompletableFuture<IngredientEventArgs> getIngredientAsync(String apiUrl){
+    public CompletableFuture<IngredientEventArgs> getIngredientAsync(String ingredientName, IngredientListener<IngredientEventArgs> listener){
         CompletableFuture<IngredientEventArgs> future =  new CompletableFuture<>();
-
+        String fullApiUrl = Constants.BASE_URL + Constants.REST_SEARCH_BY_INGREDIENT + ingredientName;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
-                Request.Method.GET, apiUrl, null, new Response.Listener<JSONObject>() {
+                Request.Method.GET, fullApiUrl, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
@@ -226,11 +226,14 @@ public class HttpHelper {
 
                         ingredientList.add(cocktail);
                     }
-                    future.complete(new IngredientEventArgs(ingredientList));
-                   // listener.onResponse(ingredientList);
+                    IngredientEventArgs eventArgs = new IngredientEventArgs(ingredientList);
+                    future.complete(eventArgs);
+                    //future.complete(new IngredientEventArgs(ingredientList));
+                    //listener.onIngredientSearchCompleted(eventArgs);
                 } catch (Exception e) {
                     //errorListener.onErrorResponse(new VolleyError());
                     future.completeExceptionally(e);
+                   // listener.onIngredientSearchError(e.getMessage());
                 }
             }
         },
@@ -239,6 +242,7 @@ public class HttpHelper {
                     public void onErrorResponse(VolleyError error) {
                         //errorListener.onErrorResponse(error);
                         future.completeExceptionally(error);
+                        listener.onIngredientSearchError(error.getMessage());
                     }
                 }
         );
