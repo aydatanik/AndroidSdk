@@ -37,7 +37,7 @@ public class HttpHelper {
         requestQueue = getRequestQueue();
     }
 
-    public static synchronized  HttpHelper getInstance(Context context){
+    public static synchronized HttpHelper getInstance(Context context){
         if(instance == null){
             instance = new HttpHelper(context);
         }
@@ -197,7 +197,6 @@ public class HttpHelper {
                         errorListener.onErrorResponse(error);
                     }
                 }
-
         );
         getRequestQueue().add(jsonObjectRequest);
     }

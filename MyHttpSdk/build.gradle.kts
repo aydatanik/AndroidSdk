@@ -8,12 +8,21 @@ android {
 
     defaultConfig {
         minSdk = 24
-
+        multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
 
+
+
     buildTypes {
+        debug{
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
         release {
             isMinifyEnabled = true
             proguardFiles(
@@ -29,6 +38,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.multidex)
     implementation(libs.gson)
     implementation(libs.volley)
     implementation(libs.appcompat)

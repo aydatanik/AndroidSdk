@@ -17,7 +17,6 @@ import java.util.concurrent.CompletableFuture;
 
 import callbacks.GetCocktailCallback;
 import callbacks.SearchCocktailsCallback;
-import callbacks.SearchIngredientsCallback;
 import domain.Cocktail;
 import domain.Constants;
 import domain.ErrorType;
@@ -52,7 +51,7 @@ public class CocktailManager {
         httpHelper.getCocktailList(fullApiUrl, new Response.Listener<List<Cocktail>>() {
             @Override
             public void onResponse(List<Cocktail> cocktails) {
-                 callback.onSearchResult(cocktails);
+                 callback.onSearchCocktailsResult(cocktails);
             }
         }, new Response.ErrorListener() {
             @Override

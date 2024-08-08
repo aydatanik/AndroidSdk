@@ -16,12 +16,11 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.myhttpsdk.core.CocktailManager;
 import com.example.myhttpsdk.core.VSdkManager;
 
-import java.util.LinkedList;
+
 import java.util.List;
 
 import callbacks.GetCocktailCallback;
 import callbacks.SearchCocktailsCallback;
-import callbacks.SearchIngredientsCallback;
 import domain.Cocktail;
 import domain.Ingredient;
 import events.IngredientEventArgs;
@@ -56,7 +55,7 @@ public class MainActivity extends AppCompatActivity  implements IngredientListen
         searchCocktailsButton.setOnClickListener(view -> {
             CocktailManager.getInstance().searchCocktailsByName("mojito", new SearchCocktailsCallback() {
                 @Override
-                public void onSearchResult(List<Cocktail> cocktailList) {
+                public void onSearchCocktailsResult(List<Cocktail> cocktailList) {
                     adapter = new CocktailAdapter(view.getContext(), cocktailList);
                     cocktailListView.setAdapter(adapter);
                 }
