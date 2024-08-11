@@ -31,22 +31,22 @@ public class CocktailManager {
     // will use HttpHelper
     // Volley manager will be deleted
 
-    private static WeakReference<CocktailManager>  instance;
+    private static CocktailManager  instance;
     private HttpHelper httpHelper;
+    private WeakReference<Context> applicationContext;
 
     private CocktailManager(){
-        httpHelper = HttpHelper.getInstance(VSdkManager.getInstance().getApplicationContent());
-        httpHelper.getRequestQueue();
     }
 
     public static CocktailManager getInstance(){
           if(instance == null){
-              instance = new WeakReference<>(new CocktailManager());
+              instance = new CocktailManager();
           }
-          return instance.get();
+          return instance;
     }
 
     public void searchCocktailsByName(String cocktailName, SearchCocktailsCallback callback) {
+        initializeHttpHelper();
         String fullApiUrl = Constants.BASE_URL + Constants.REST_SEARCH_COCKTAILS_BY_NAME + cocktailName;
         httpHelper.getCocktailList(fullApiUrl, new Response.Listener<List<Cocktail>>() {
             @Override
@@ -67,6 +67,7 @@ public class CocktailManager {
     }
 
     public void getRandomCocktail(GetCocktailCallback callback){
+        initializeHttpHelper();
         String fullApiUrl = Constants.BASE_URL + Constants.REST_GET_RANDOM_COCKTAIL;
         httpHelper.getCocktailObject(fullApiUrl, new Response.Listener<Cocktail>() {
             @Override
@@ -88,6 +89,7 @@ public class CocktailManager {
     }
 
     public void searchIngredientByName( IngredientListener<IngredientEventArgs> listener, String ingredientName){
+        initializeHttpHelper();
         CompletableFuture<IngredientEventArgs> future =  httpHelper.getIngredientAsync(ingredientName, listener);
         future.thenAccept (eventArgs -> {
            /* ((Activity) context).runOnUiThread(new Runnable() {
@@ -120,6 +122,20 @@ public class CocktailManager {
             exception =  new CocktailsSdkException(ErrorType.NETWORK_ERROR, "Please check the internet connection");
         }
         return exception;
+    }
+
+    public void startSdk(Context context){
+        // Take the application content, it is important for the volley
+        applicationContext = new WeakReference<>(context);
+        //To-do...
+    }
+    public Context getApplicationContent(){
+        return applicationContext.get();
+    }
+
+    private void initializeHttpHelper(){
+        httpHelper = HttpHelper.getInstance(getApplicationContent());
+        httpHelper.getRequestQueue();
     }
 }
 

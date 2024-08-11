@@ -10,7 +10,9 @@ public class VSdkManager {
     private WeakReference<Context> applicationContext;
 
     //private constructor
+     private VSdkManager(){
 
+     }
 
     public static VSdkManager getInstance(){
         if(instance == null){
@@ -28,6 +30,4 @@ public class VSdkManager {
     public Context getApplicationContent(){
           return applicationContext.get();
     }
-
-
 }

@@ -38,6 +38,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Search Ingredient"/>
+    <Button
+        android:id="@+id/navigate_second_activity"
+        android:layout_margin="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Navigate"/>
 
     <TextView
         android:id="@+id/cocktail"

@@ -1,5 +1,6 @@
 package com.example.sampleappwithvolley;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity  implements IngredientListen
     private CocktailAdapter adapter;
     private TextView cocktailTextView;
     private  IngredientAdapter ingredientAdapter;
+    private Button navigateToSecondPage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,26 +48,38 @@ public class MainActivity extends AppCompatActivity  implements IngredientListen
         searchCocktailsButton = findViewById(R.id.search_cocktails_button);
         getRandomCocktailsButton = findViewById(R.id.get_random_cocktails_button);
         searchIngredientButton = findViewById(R.id.search_ingredient_button);
+        navigateToSecondPage = findViewById(R.id.navigate_second_activity);
         cocktailListView = findViewById(R.id.cocktail_list);
         cocktailTextView = findViewById(R.id.cocktail);
         cocktailListView.setAdapter(adapter);
 
        // VSdkManager.getInstance().startSdk(getApplicationContext());
-        VSdkManager.getInstance().startSdk(this);
+        CocktailManager.getInstance().startSdk(getApplicationContext());
         searchCocktailsButton.setOnClickListener(view -> {
-            CocktailManager.getInstance().searchCocktailsByName("mojito", new SearchCocktailsCallback() {
-                @Override
-                public void onSearchCocktailsResult(List<Cocktail> cocktailList) {
-                    adapter = new CocktailAdapter(view.getContext(), cocktailList);
-                    cocktailListView.setAdapter(adapter);
-                }
+            try {
+                CocktailManager.getInstance().searchCocktailsByName("mojito", new SearchCocktailsCallback() {
+                    @Override
+                    public void onSearchCocktailsResult(List<Cocktail> cocktailList) {
+                        adapter = new CocktailAdapter(view.getContext(), cocktailList);
+                        cocktailListView.setAdapter(adapter);
+                    }
 
-                @Override
-                public void onSearchCocktailsFailed(CocktailsSdkException exception) {
-                    String message = exception.getErrorType().toString() + " " + exception.getMessage();
-                    Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
-                }
-            });
+                    @Override
+                    public void onSearchCocktailsFailed(CocktailsSdkException exception) {
+                        String message = exception.getErrorType().toString() + " " + exception.getMessage();
+                        Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+                    }
+                });
+            }catch(Exception e){
+                System.out.println(e.getMessage().toString());
+                System.out.println(e.getStackTrace().toString());
+            }
+
+        });
+
+        navigateToSecondPage.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this,SecondActivity.class);
+           startActivity(intent);
         });
 
         getRandomCocktailsButton.setOnClickListener(view -> {

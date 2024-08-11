@@ -14,6 +14,4 @@ public class CocktailsSdkException  extends Exception {
     public ErrorType getErrorType(){
         return  type;
     }
-
-
 }
