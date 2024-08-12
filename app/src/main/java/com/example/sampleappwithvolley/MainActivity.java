@@ -15,7 +15,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.myhttpsdk.core.CocktailManager;
-import com.example.myhttpsdk.core.VSdkManager;
 
 
 import java.util.List;
@@ -53,7 +52,6 @@ public class MainActivity extends AppCompatActivity  implements IngredientListen
         cocktailTextView = findViewById(R.id.cocktail);
         cocktailListView.setAdapter(adapter);
 
-       // VSdkManager.getInstance().startSdk(getApplicationContext());
         CocktailManager.getInstance().startSdk(getApplicationContext());
         searchCocktailsButton.setOnClickListener(view -> {
             try {
@@ -74,7 +72,6 @@ public class MainActivity extends AppCompatActivity  implements IngredientListen
                 System.out.println(e.getMessage().toString());
                 System.out.println(e.getStackTrace().toString());
             }
-
         });
 
         navigateToSecondPage.setOnClickListener(view -> {

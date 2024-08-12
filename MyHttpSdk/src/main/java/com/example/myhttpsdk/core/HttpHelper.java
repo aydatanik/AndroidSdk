@@ -52,27 +52,6 @@ public class HttpHelper {
         return requestQueue;
     }
 
-    /*public <T> void getRequest(String apiUrl, final Class<T[]> requestedClass,
-                               final Response.Listener<List<T>> listener, final Response.ErrorListener errorListener){
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, apiUrl, null, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
-                T[] resultArray = gson.fromJson(response.toString(), requestedClass);
-                List<T> resultList = new ArrayList<>();
-                for(T item : resultArray){
-                    resultList.add(item);
-                }
-                listener.onResponse(resultList);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                errorListener.onErrorResponse(error);
-            }
-        });
-        getRequestQueue().add(jsonArrayRequest);
-    }*/
-
     public  void getCocktailList(String apiUrl,
                                final Response.Listener<List<Cocktail>> listener, final Response.ErrorListener errorListener){
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
@@ -100,7 +79,8 @@ public class HttpHelper {
                                 measures.put(measureName,cocktailObject.getString(measureName));
                             }
                         }
-                       Cocktail cocktail = new Cocktail();
+
+                        Cocktail cocktail = new Cocktail();
                         cocktail.setIdDrink(cocktailObject.getString("idDrink"));
                         cocktail.setStrDrink(cocktailObject.getString("strDrink"));
                         cocktail.setStrDrinkAlternate(cocktailObject.getString("strDrinkAlternate"));
@@ -117,7 +97,6 @@ public class HttpHelper {
                         cocktail.setDateModified(cocktailObject.getString("dateModified"));
                         cocktail.setIngredients(ingredients);
                         cocktail.setMeasures(measures);
-
                         cocktailList.add(cocktail);
                     }
                     listener.onResponse(cocktailList);
@@ -132,7 +111,6 @@ public class HttpHelper {
                         errorListener.onErrorResponse(error);
                     }
                 }
-
         );
         getRequestQueue().add(jsonObjectRequest);
     }
@@ -157,7 +135,6 @@ public class HttpHelper {
                                 ingredients.put(ingredientName,cocktailObject.getString(ingredientName));
                             }
                         }
-
                         Map<String, String> measures = new HashMap<>();
                         for(int j= 0; j < 16 ; j++){
                             String measureName  = "strMeasure" + j;
@@ -227,8 +204,6 @@ public class HttpHelper {
                     }
                     IngredientEventArgs eventArgs = new IngredientEventArgs(ingredientList);
                     future.complete(eventArgs);
-                    //future.complete(new IngredientEventArgs(ingredientList));
-                    //listener.onIngredientSearchCompleted(eventArgs);
                 } catch (Exception e) {
                     //errorListener.onErrorResponse(new VolleyError());
                     future.completeExceptionally(e);

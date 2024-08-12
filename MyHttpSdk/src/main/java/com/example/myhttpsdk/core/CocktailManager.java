@@ -26,11 +26,6 @@ import exceptions.CocktailsSdkException;
 
 public class CocktailManager {
 
-    // first method search cocktails by name ->  searchCocktailsByName(String apiUrl, String cocktailName)
-    // Second method get random cocktails -> getRandomCocktails
-    // will use HttpHelper
-    // Volley manager will be deleted
-
     private static CocktailManager  instance;
     private HttpHelper httpHelper;
     private WeakReference<Context> applicationContext;
@@ -127,7 +122,6 @@ public class CocktailManager {
     public void startSdk(Context context){
         // Take the application content, it is important for the volley
         applicationContext = new WeakReference<>(context);
-        //To-do...
     }
     public Context getApplicationContent(){
         return applicationContext.get();
