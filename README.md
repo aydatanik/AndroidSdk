@@ -9,7 +9,7 @@ CocktailManager.getInstance().startSdk(getApplicationContext());
 
 ## Callbacks 
 There are two kinds of callbacks. One for searchCocktailsByName function, the other for getRandomCocktail function.
-![Usecase](usecase.png)
+![Usecase](callbacks.png)
 
 ## Functions 
 -searchCocktailsByName
@@ -54,4 +54,4 @@ There are two kinds of callbacks. One for searchCocktailsByName function, the ot
    CocktailManager.getInstance().searchIngredientByName(  this,"vodka");
   ```
 ## Overview with class diagram
-![Usecase](usecase.png)
+![Usecase](classDiagram.png)
