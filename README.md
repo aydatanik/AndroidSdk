@@ -1,7 +1,7 @@
 # Cocktails Sdk
 
 ## Structure
-The cocktails sdk was written by using Java. For using cocktails sdk, the developer must include internet permission <kbd>uses-permission android:name="android.permission.INTERNET" /></kbd>into the andrid manifest file. For initializing cocktails sdk, the developer must call <kbd>startSdk</kbd> function. The user must provide application context as parameter of startSdk function. There is no need to initialize sdk again. Once it is initialized, the developer can use all functionalities. After initialized the sdk by calling the startSdk function, the developer can use  <kbd>searchCocktailsByName</kbd>, <kbd>getRandomCocktail</kbd>, <kbd>searchIngredientByName</kbd>.
+The cocktails sdk was written by using Java. For using cocktails sdk, the developer must include internet permission <kbd>uses-permission android:name="android.permission.INTERNET"</kbd> into the android manifest file. For initializing cocktails sdk, the developer must call <kbd>startSdk</kbd> function. The user must provide application context as parameter of startSdk function. There is no need to initialize sdk again. Once it is initialized, the developer can use all functionalities. After initialized the sdk by calling the startSdk function, the developer can use  <kbd>searchCocktailsByName</kbd>, <kbd>getRandomCocktail</kbd>, <kbd>searchIngredientByName</kbd>.
 ```
 CocktailManager.getInstance().startSdk(getApplicationContext());
 ```
